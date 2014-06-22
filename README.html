@@ -1,0 +1,79 @@
+<h1 id="prediction-assignment-writeup">Prediction Assignment Writeup</h1>
+
+<h2 id="intro">Intro</h2>
+
+<p>Weight Lifting Exercises Dataset is used as a training dataset for a prediction assignment in Practical Machine Learning class. The goal is to predict a class of the exercise based on data from multiple sensors. Five classes are availavle:</p>
+
+<ul>
+<li>exactly according to the specification (Class A)</li>
+<li>throwing the elbows to the front (Class B)</li>
+<li>lifting the dumbbell only halfway (Class C)</li>
+<li>lowering the dumbbell only halfway (Class D) </li>
+<li>throwing the hips to the front (Class E)</li>
+</ul>
+
+<h2 id="pre-processing">Pre-processing</h2>
+
+<p>The following are the main components of pre processing:</p>
+
+<ul>
+<li>Discarding NA</li>
+<li>Performing PCA</li>
+<li>Removing irrelavent and non-numerci rows from the set: timestamp, X(column numver), user_name, new_window</li>
+</ul>
+
+<h2 id="training-and-cross-validation">Training and Cross Validation</h2>
+
+<p>The training/testing split was 20 to 80, greatly reducing learning time. Even with such low percent of data going into testing set, the accuracy reached over 91%. Random forests algorithm was used to built the model.</p>
+
+<p>Number of folds in K-fold cross-validation was set to four through trainControl parameter. preProcess parameter of train function was set to include PCA.</p>
+
+<pre class="prettyprint prettyprinted"><code><span class="pln">modFit </span><span class="pun">&lt;-</span><span class="pln"> train</span><span class="pun">(</span><span class="kwd">as</span><span class="pun">.</span><span class="pln">factor</span><span class="pun">(</span><span class="pln">trainData$classe</span><span class="pun">)~</span><span class="pln"> </span><span class="pun">.,</span><span class="pln">data</span><span class="pun">=</span><span class="pln">trainData</span><span class="pun">,</span><span class="pln">  preProcess</span><span class="pun">=</span><span class="pln">c</span><span class="pun">(</span><span class="str">"pca"</span><span class="pun">),</span><span class="pln">  method</span><span class="pun">=</span><span class="str">"rf"</span><span class="pun">,</span><span class="pln">prox</span><span class="pun">=</span><span class="pln">TRUE</span><span class="pun">,</span><span class="pln"> trControl </span><span class="pun">=</span><span class="pln"> trainControl</span><span class="pun">(</span><span class="pln">method </span><span class="pun">=</span><span class="pln"> </span><span class="str">"cv"</span><span class="pun">,</span><span class="pln"> number </span><span class="pun">=</span><span class="pln"> </span><span class="lit">4</span><span class="pun">,</span><span class="pln"> allowParallel</span><span class="pun">=</span><span class="pln">T</span><span class="pun">))</span></code></pre>
+
+<p>Random forests model reported the best achived accuracy of 0.913.</p>
+
+<pre class="prettyprint prettyprinted"><code><span class="typ">Random</span><span class="pln"> </span><span class="typ">Forest</span><span class="pln"> 
+
+</span><span class="lit">3927</span><span class="pln"> samples
+  </span><span class="lit">53</span><span class="pln"> predictors
+   </span><span class="lit">5</span><span class="pln"> classes</span><span class="pun">:</span><span class="pln"> </span><span class="str">'A'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'B'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'C'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'D'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'E'</span><span class="pln"> 
+
+</span><span class="typ">Pre</span><span class="pun">-</span><span class="pln">processing</span><span class="pun">:</span><span class="pln"> principal component signal extraction</span><span class="pun">,</span><span class="pln"> scaled</span><span class="pun">,</span><span class="pln"> centered 
+</span><span class="typ">Resampling</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Cross</span><span class="pun">-</span><span class="typ">Validated</span><span class="pln"> </span><span class="pun">(</span><span class="lit">4</span><span class="pln"> fold</span><span class="pun">)</span><span class="pln"> 
+
+</span><span class="typ">Summary</span><span class="pln"> of sample sizes</span><span class="pun">:</span><span class="pln"> </span><span class="lit">2944</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2946</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2946</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2945</span><span class="pln"> 
+
+</span><span class="typ">Resampling</span><span class="pln"> results across tuning parameters</span><span class="pun">:</span><span class="pln">
+
+  mtry  </span><span class="typ">Accuracy</span><span class="pln">  </span><span class="typ">Kappa</span><span class="pln">  </span><span class="typ">Accuracy</span><span class="pln"> SD  </span><span class="typ">Kappa</span><span class="pln"> SD
+  </span><span class="lit">2</span><span class="pln">     </span><span class="lit">0.913</span><span class="pln">     </span><span class="lit">0.89</span><span class="pln">   </span><span class="lit">0.0133</span><span class="pln">       </span><span class="lit">0.0168</span><span class="pln">  
+  </span><span class="lit">27</span><span class="pln">    </span><span class="lit">0.893</span><span class="pln">     </span><span class="lit">0.864</span><span class="pln">  </span><span class="lit">0.015</span><span class="pln">        </span><span class="lit">0.0189</span><span class="pln">  
+  </span><span class="lit">53</span><span class="pln">    </span><span class="lit">0.892</span><span class="pln">     </span><span class="lit">0.863</span><span class="pln">  </span><span class="lit">0.0156</span><span class="pln">       </span><span class="lit">0.0198</span><span class="pln">  
+
+</span><span class="typ">Accuracy</span><span class="pln"> was used to </span><span class="kwd">select</span><span class="pln"> the optimal model </span><span class="kwd">using</span><span class="pln">  the largest value</span><span class="pun">.</span><span class="pln">
+</span><span class="typ">The</span><span class="pln"> </span><span class="kwd">final</span><span class="pln"> value used </span><span class="kwd">for</span><span class="pln"> the model was mtry </span><span class="pun">=</span><span class="pln"> </span><span class="lit">2.</span><span class="pln"> </span></code></pre>
+
+<h2 id="independent-corss-validation">Independent Corss Validation</h2>
+
+<p>Even though the random forests model stores about cross validation, we can verify it independently in the following way:</p>
+
+<pre class="prettyprint prettyprinted"><code><span class="pln">predictions </span><span class="pun">=</span><span class="pln"> predict</span><span class="pun">(</span><span class="pln">modFit</span><span class="pun">,</span><span class="pln"> crossValid</span><span class="pun">[-</span><span class="lit">60</span><span class="pun">])</span><span class="pln">
+table</span><span class="pun">(</span><span class="pln">predictions</span><span class="pun">,</span><span class="pln">crossValid$classe</span><span class="pun">)</span></code></pre>
+
+<p>Result:</p>
+
+<pre class="prettyprint prettyprinted"><code><span class="pln">predictions    A    B    C    D    E
+          A </span><span class="lit">4311</span><span class="pln">  </span><span class="lit">153</span><span class="pln">   </span><span class="lit">31</span><span class="pln">   </span><span class="lit">36</span><span class="pln">   </span><span class="lit">13</span><span class="pln">
+          B   </span><span class="lit">57</span><span class="pln"> </span><span class="lit">2685</span><span class="pln">  </span><span class="lit">175</span><span class="pln">   </span><span class="lit">23</span><span class="pln">   </span><span class="lit">56</span><span class="pln">
+          C   </span><span class="lit">45</span><span class="pln">  </span><span class="lit">147</span><span class="pln"> </span><span class="lit">2469</span><span class="pln">  </span><span class="lit">222</span><span class="pln">   </span><span class="lit">68</span><span class="pln">
+          D   </span><span class="lit">45</span><span class="pln">   </span><span class="lit">24</span><span class="pln">   </span><span class="lit">44</span><span class="pln"> </span><span class="lit">2263</span><span class="pln">   </span><span class="lit">57</span><span class="pln">
+          E    </span><span class="lit">6</span><span class="pln">   </span><span class="lit">28</span><span class="pln">   </span><span class="lit">18</span><span class="pln">   </span><span class="lit">28</span><span class="pln"> </span><span class="lit">2691</span></code></pre>
+
+<p>Calculate accuracy:</p>
+
+<pre class="prettyprint prettyprinted"><code><span class="pln">accuracy_true </span><span class="pun">=</span><span class="pln"> sum</span><span class="pun">(</span><span class="pln">predictions </span><span class="pun">==</span><span class="pln">crossValid$classe</span><span class="pun">)/</span><span class="pln">length</span><span class="pun">(</span><span class="pln">predictions</span><span class="pun">)</span><span class="pln">
+accuracy_true </span><span class="com">#~91.8%</span></code></pre>
+
+<p>Result:</p>
+
+<pre class="prettyprint prettyprinted"><code><span class="pun">[</span><span class="lit">1</span><span class="pun">]</span><span class="pln"> </span><span class="lit">0.9187002</span></code></pre>
