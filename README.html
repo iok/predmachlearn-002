@@ -1,4 +1,12 @@
-<h1 id="prediction-assignment-writeup">Prediction Assignment Writeup</h1>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Welcome document</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://stackedit.io/libs/MathJax/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="prediction-assignment-writeup">Prediction Assignment Writeup</h1>
 
 <h2 id="intro">Intro</h2>
 
@@ -77,3 +85,38 @@ accuracy_true </span><span class="com">#~91.8%</span></code></pre>
 <p>Result:</p>
 
 <pre class="prettyprint prettyprinted"><code><span class="pun">[</span><span class="lit">1</span><span class="pun">]</span><span class="pln"> </span><span class="lit">0.9187002</span></code></pre>
+
+<h2 id="full-code-listing">Full Code Listing</h2>
+
+<p>Content of assignment.r file:</p>
+
+<pre class="prettyprint prettyprinted"><code><span class="com"># load thetraining set</span><span class="pln">
+trainRawData </span><span class="pun">&lt;-</span><span class="pln"> read</span><span class="pun">.</span><span class="pln">csv</span><span class="pun">(</span><span class="str">"pml-training.csv"</span><span class="pun">,</span><span class="pln">na</span><span class="pun">.</span><span class="pln">strings</span><span class="pun">=</span><span class="pln">c</span><span class="pun">(</span><span class="str">"NA"</span><span class="pun">,</span><span class="str">""</span><span class="pun">))</span><span class="pln">
+
+</span><span class="com"># discard NAs</span><span class="pln">
+</span><span class="typ">NAs</span><span class="pln"> </span><span class="pun">&lt;-</span><span class="pln"> apply</span><span class="pun">(</span><span class="pln">trainRawData</span><span class="pun">,</span><span class="lit">2</span><span class="pun">,</span><span class="kwd">function</span><span class="pun">(</span><span class="pln">x</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">sum</span><span class="pun">(</span><span class="kwd">is</span><span class="pun">.</span><span class="pln">na</span><span class="pun">(</span><span class="pln">x</span><span class="pun">))})</span><span class="pln"> 
+validData </span><span class="pun">&lt;-</span><span class="pln"> trainRawData</span><span class="pun">[,</span><span class="pln">which</span><span class="pun">(</span><span class="typ">NAs</span><span class="pln"> </span><span class="pun">==</span><span class="pln"> </span><span class="lit">0</span><span class="pun">)]</span><span class="pln">
+
+</span><span class="com"># make training set and cross validation data sets</span><span class="pln">
+trainIndex </span><span class="pun">&lt;-</span><span class="pln"> createDataPartition</span><span class="pun">(</span><span class="pln">y </span><span class="pun">=</span><span class="pln"> validData$classe</span><span class="pun">,</span><span class="pln"> p</span><span class="pun">=</span><span class="lit">0.2</span><span class="pun">,</span><span class="pln">list</span><span class="pun">=</span><span class="pln">FALSE</span><span class="pun">)</span><span class="pln">
+trainData </span><span class="pun">&lt;-</span><span class="pln"> validData</span><span class="pun">[</span><span class="pln">trainIndex</span><span class="pun">,]</span><span class="pln">
+crossValid </span><span class="pun">&lt;-</span><span class="pln"> validData</span><span class="pun">[-</span><span class="pln">trainIndex</span><span class="pun">,]</span><span class="pln">
+
+</span><span class="com"># remove columns with irrelavent data</span><span class="pln">
+removeIndex </span><span class="pun">&lt;-</span><span class="pln"> grep</span><span class="pun">(</span><span class="str">"timestamp|X|user_name|new_window"</span><span class="pun">,</span><span class="pln">names</span><span class="pun">(</span><span class="pln">trainData</span><span class="pun">))</span><span class="pln">
+trainData </span><span class="pun">&lt;-</span><span class="pln"> trainData</span><span class="pun">[,-</span><span class="pln">removeIndex</span><span class="pun">]</span><span class="pln">
+
+</span><span class="com"># build model using random forests and include PCA</span><span class="pln">
+</span><span class="com"># Set Cross-Validated = 4 fold</span><span class="pln">
+modFit </span><span class="pun">&lt;-</span><span class="pln"> train</span><span class="pun">(</span><span class="kwd">as</span><span class="pun">.</span><span class="pln">factor</span><span class="pun">(</span><span class="pln">trainData$classe</span><span class="pun">)~</span><span class="pln"> </span><span class="pun">.,</span><span class="pln">data</span><span class="pun">=</span><span class="pln">trainData</span><span class="pun">,</span><span class="pln">  preProcess</span><span class="pun">=</span><span class="pln">c</span><span class="pun">(</span><span class="str">"pca"</span><span class="pun">),</span><span class="pln">  method</span><span class="pun">=</span><span class="str">"rf"</span><span class="pun">,</span><span class="pln">prox</span><span class="pun">=</span><span class="pln">TRUE</span><span class="pun">,</span><span class="pln"> trControl </span><span class="pun">=</span><span class="pln"> trainControl</span><span class="pun">(</span><span class="pln">method </span><span class="pun">=</span><span class="pln"> </span><span class="str">"cv"</span><span class="pun">,</span><span class="pln"> number </span><span class="pun">=</span><span class="pln"> </span><span class="lit">4</span><span class="pun">,</span><span class="pln"> allowParallel</span><span class="pun">=</span><span class="pln">T</span><span class="pun">))</span><span class="pln">
+
+</span><span class="com"># manually determine accuracy</span><span class="pln">
+predictions </span><span class="pun">=</span><span class="pln"> predict</span><span class="pun">(</span><span class="pln">modFit</span><span class="pun">,</span><span class="pln"> crossValid</span><span class="pun">[-</span><span class="lit">60</span><span class="pun">])</span><span class="pln">
+table</span><span class="pun">(</span><span class="pln">predictions</span><span class="pun">,</span><span class="pln">crossValid$classe</span><span class="pun">)</span><span class="pln">
+accuracy_true </span><span class="pun">=</span><span class="pln"> sum</span><span class="pun">(</span><span class="pln">predictions </span><span class="pun">==</span><span class="pln">crossValid$classe</span><span class="pun">)/</span><span class="pln">length</span><span class="pun">(</span><span class="pln">predictions</span><span class="pun">)</span><span class="pln">
+accuracy_true </span><span class="com">#~91.8%</span><span class="pln">
+
+</span><span class="com"># make the prediction on the testing data set</span><span class="pln">
+predictRawData </span><span class="pun">=</span><span class="pln"> read</span><span class="pun">.</span><span class="pln">csv</span><span class="pun">(</span><span class="str">"pml-testing.csv"</span><span class="pun">)</span><span class="pln">
+answers  </span><span class="pun">&lt;-</span><span class="pln"> predict</span><span class="pun">(</span><span class="pln">modFit</span><span class="pun">,</span><span class="pln">predictRawData</span><span class="pun">);</span></code></pre></div></body>
+</html>
